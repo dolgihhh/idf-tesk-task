@@ -10,6 +10,11 @@ services:
       POSTGRES_USER: test-task
       POSTGRES_PASSWORD: test-task
       POSTGRES_DB: test-task
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test-task -d test-task"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
   idf-test-task:
     image: pr1ntle/idf-test-task:latest
     build: .
@@ -24,6 +29,7 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 volumes:
   postgres_data:
